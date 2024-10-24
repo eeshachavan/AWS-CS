@@ -4,7 +4,10 @@ phases:
   install:
     commands:
       - pip install --upgrade awscli
+      - pip install -r requirements.txt -t ./package  # Install dependencies into a directory called 'package'
   build:
     commands:
-      - zip function.zip lambda_function.py
-      - aws lambda update-function-code --function-name ImageProcessingLambda --zip-file fileb://function.zip
+      - cp lambda_function.py ./package/  # Copy the lambda function into the package directory
+      - cd package && zip -r ../function.zip .  # Zip the contents of the package directory
+      - aws lambda update-function-code --function-name ImageProcessingLambda --zip-file fileb://function.zip  # Update Lambda code
+
