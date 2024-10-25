@@ -14,10 +14,26 @@ def lambda_handler(event, context):
     response = s3.get_object(Bucket=bucket, Key=key)
     print(f"Processing file {key} from bucket {bucket}")
 
-    # New print statement for verification
+    # Send a notification through SNS
+    sns_client = boto3.client('sns')
+    sns_topic_arn = "arn:aws:sns:eu-north-1:010928190992:MyTopic"  # Replace with your SNS Topic ARN
+    
+    message = f"File {key} from bucket {bucket} has been processed successfully."
+    
+    # Publish message to SNS
+    response = sns_client.publish(
+        TopicArn=sns_topic_arn,
+        Message=message,
+        Subject="S3 Image Processing Notification"
+    )
+    
+    print(f"Notification sent to SNS topic: {sns_topic_arn}")
+    
+    # Additional logs for verification
     print(f"Lambda function updated! Now processing {key} from {bucket}.")
+    print("again updated")
 
     return {
         'statusCode': 200,
-        'body': json.dumps('Image processed successfully!')
+        'body': json.dumps('Image processed and notification sent successfully!')
     }
